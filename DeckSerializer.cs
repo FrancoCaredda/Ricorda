@@ -1,5 +1,3 @@
-using System.Text.Json;
-
 internal static class DeckSerializer
 {
     public static readonly string Folder;
@@ -11,24 +9,59 @@ internal static class DeckSerializer
 
     public static void Serialize(Deck deck)
     {
-        string jsonString = JsonSerializer.Serialize(deck);
+        string name = deck.Name;
+        string targetLanguage = deck.TargetLanguage;
+        string language = deck.Language;
+
         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), Folder);
+        string fileName = Path.Combine(folderPath, $"{deck.DeckID}.txt");
 
         Directory.CreateDirectory(folderPath);
-        File.WriteAllText(Path.Combine(folderPath, $"{deck.DeckID}.json"), jsonString);
+
+        using StreamWriter writer = new(fileName);
+        writer.WriteLine(name);
+        writer.WriteLine(targetLanguage);
+        writer.WriteLine(language);
+
+        foreach ((var key, var value) in deck)
+        {
+            writer.Write($"{value.Word}|{value.Definition}");
+        }
     }
 
-    public static void Deserialize(string fileName)
+    public static Deck? Deserialize(string fileName)
     {
-        string jsonString = File.ReadAllText(fileName);
-        var result = JsonSerializer.Deserialize<KeyValuePair<string, Term>[]>(jsonString);
+        using StreamReader reader = new(fileName);
 
-        if (result is not null)
+        string? name = reader.ReadLine();
+        string? targetLanguage = reader.ReadLine();
+        string? language = reader.ReadLine();
+
+        if (name is null || targetLanguage is null || language is null)
         {
-            foreach (var item in result)
-            {
-                Console.WriteLine($"{item.Key} - {item.Value}");        
-            }
+            return null;
         }
+
+        var deck = new Deck(name, targetLanguage, language);
+
+        string? entry = reader.ReadLine();
+        
+        while (entry is not null)
+        {
+            string[] values = entry.Split('|');
+
+            if (values.Length >= 2)
+            {
+                deck.AddTerm(values[0], values[1]);
+            }
+            else
+            {
+                throw new IOException("Failed to read an entry");
+            }
+
+            entry = reader.ReadLine();
+        }  
+
+        return deck;      
     }
 }

@@ -1,4 +1,3 @@
-﻿var deck = new Deck("Common phrases", "Polish", "English");
-deck.AddTerm("Jak się masz?", "How are you?");
+﻿var deck = DeckSerializer.Deserialize("decks/cp.txt");
 
-DeckSerializer.Serialize(deck);
+Console.WriteLine(deck);
