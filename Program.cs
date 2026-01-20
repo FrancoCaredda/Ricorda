@@ -1,12 +1,4 @@
-﻿var polishDeck = new Deck("Polish Common Words", "Polish", "English");
+﻿var deck = new Deck("Common phrases", "Polish", "English");
+deck.AddTerm("Jak się masz?", "How are you?");
 
-polishDeck.AddTerm("Iść", "To go");
-polishDeck.AddTerm("Chodzić", "To walk");
-polishDeck.AddTerm("Test", ".");
-
-var englishDeck = new Deck("Emotions and Health", "English", "English");
-englishDeck.AddTerm("Healthy", "The state when you feel well");
-englishDeck.AddTerm("To be sick", "to be ill");
-
-Console.WriteLine(polishDeck);
-Console.WriteLine(englishDeck);
+DeckSerializer.Serialize(deck);

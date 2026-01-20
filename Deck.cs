@@ -1,17 +1,25 @@
 using System.Collections;
 
-record struct Term(string ID, string Word, string Definition);
+internal record struct Term(string Word, string Definition);
 
-class Deck(string name, string targetLanguage, string language) : IEnumerable<Term>
+internal class Deck(string name, string targetLanguage, string language) : 
+    IEnumerable<KeyValuePair<string, Term>>
 {
     private string? _deckId = null;
-    private readonly List<Term> _terms = [];
+    private readonly Dictionary<string, Term> _terms = [];
     private int _nextTermId = 0;
 
     public string Name { get; set; } = name;
     public string TargetLanguage { get; } = targetLanguage;
     public string Language { get; } = language;
 
+    public string? DeckID
+    {
+        get
+        {
+            return _deckId;
+        }
+    }
 
     public void AddTerm(string word, string definition)
     {
@@ -25,7 +33,7 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
             throw new ArgumentException("the newDefinition parameter is null or empty");
         }
 
-        _terms.Add(new Term(GetNextTermId(), word, definition));
+        _terms.Add(GetNextTermId(), new Term(word, definition));
     }
 
     public bool ModifyTerm(string id, string newWord, string newDefinition)
@@ -40,32 +48,21 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
             throw new ArgumentException("the newDefinition parameter is null or empty");
         }
 
-        int index = _terms.FindIndex(term => term.ID == id);
-
-        if (index != -1)
+        if (_terms.ContainsKey(id))
         {
-            _terms[index] = new Term(id, newWord, newDefinition);
+            _terms[id] = new Term(newWord, newDefinition);
 
             return true;
         }
 
         return false;
     }
-
+    
     public bool RemoveTerm(string id)
     {
-        int index = _terms.FindIndex(term => term.ID == id);
-
-        if (index != -1)
-        {
-            _terms.RemoveAt(index);
-
-            return true;
-        }
-
-        return false;
+        return _terms.Remove(id);
     }
-
+    
     public override string? ToString()
     {
         return _deckId;
@@ -87,7 +84,7 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
     // and hides the GetEnumerator method of the base interface using the new keyword.
     // Since the signatures of two methods are different, they both have to be implemented.
     // If they had the same signature, only one implementation would've been needed.
-    public IEnumerator<Term> GetEnumerator() => _terms.GetEnumerator();
+    public IEnumerator<KeyValuePair<string, Term>> GetEnumerator() => _terms.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
