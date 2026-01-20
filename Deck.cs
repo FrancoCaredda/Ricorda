@@ -12,7 +12,6 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
     public string TargetLanguage { get; } = targetLanguage;
     public string Language { get; } = language;
 
-    public IEnumerator<Term> GetEnumerator() => _terms.GetEnumerator();
 
     public void AddTerm(string word, string definition)
     {
@@ -82,6 +81,12 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
 
         return $"{_deckId}-{_nextTermId++}";
     }
+
+    // System.Collections.Generic.IEnumerable<T> extends System.Collections.IEnumerable
+    // and hides the GetEnumerator method of the base interface using the new keyword.
+    // Since the signatures of two methods are different, they both have to be implemented.
+    // If they had the same signature, only one implementation would've been needed.
+    public IEnumerator<Term> GetEnumerator() => _terms.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
     {
