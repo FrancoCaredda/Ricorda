@@ -73,6 +73,7 @@ class Deck(string name, string targetLanguage, string language) : IEnumerable<Te
 
     private string GetNextTermId()
     {
+        // if the value is currently null assign a new value to it.
         _deckId ??= string.Concat(Name.Trim()
                                       .ToLowerInvariant()
                                       .Split(' ', StringSplitOptions.RemoveEmptyEntries)
