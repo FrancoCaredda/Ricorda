@@ -1,3 +1,5 @@
-﻿var deck = DeckSerializer.Deserialize("decks/cp.txt");
+﻿List<Deck?> decks = [DeckSerializer.Deserialize("decks/cp.txt")];
 
-Console.WriteLine(deck);
+View appView = new AppView(decks);
+appView.Init();
+appView.Visualize();
